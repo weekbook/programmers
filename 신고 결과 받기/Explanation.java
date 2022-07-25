@@ -18,34 +18,38 @@ public class Explanation{
     }
 }
 
-
 class Solution {
     public int[] solution(String[] id_list, String[] report, int k) {
-        int[] ret = new int[id_list.length];
-        Map<String, Integer> index = new HashMap<>();
-        Map<String, List<Integer>> list = new HashMap<>();
-		
-        for(int i=0 ; i<id_list.length ; i++) {
-			index.put(id_list[i],i);
-		}
-        
-        for(String rep : report) {
-        	String[] ids = rep.split(" ");
-        	String fromId=ids[0], toId=ids[1];
-        	if(!list.containsKey(toId)) list.put(toId, new ArrayList<>());
-        	List<Integer> tmp = list.get(toId);
-        	if(!tmp.contains(index.get(fromId))) tmp.add(index.get(fromId));
+        int[] answer = new int[id_list.length];
+        int[] totalReport = new int[id_list.length];
+        HashMap<String, ArrayList<Integer>> dic = new HashMap<String, ArrayList<Integer>>();
+        Set<String> noDup = new HashSet<>();
+        for(String s : report){
+            noDup.add(s);
         }
-        
-        for(int i=0 ; i<id_list.length ; i++) {
-        	String id = id_list[i];
-        	if(list.containsKey(id) && list.get(id).size()>=k) {
-	        	for(int idx : list.get(id)) {
-	        		ret[idx]++;
-	        	}
-        	}
+        for(String s : noDup){
+            String reporter = s.split(" ")[0];
+            String reportee = s.split(" ")[1];
+            int index = Arrays.asList(id_list).indexOf(reportee);
+            totalReport[index]++;
+            if (dic.get(reporter) == null) {
+                dic.put(reporter, new ArrayList<Integer>());
+            }
+            dic.get(reporter).add(index);
         }
-        
-        return ret;
+        ArrayList<Integer> over = new ArrayList<>();
+        for(int i=0; i<totalReport.length; i++){
+            if(totalReport[i]>=k){
+                over.add(i);
+            }
+        }
+        for(String s : dic.keySet()){
+            for(int i=0; i<over.size(); i++){
+                if(dic.get(s).contains(over.get(i))){
+                    answer[Arrays.asList(id_list).indexOf(s)]++;
+                }
+            }
+        }
+        return answer;
     }
 }
